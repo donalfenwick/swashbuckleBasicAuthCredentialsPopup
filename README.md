@@ -1,0 +1,1 @@
+swashbuckle-basicauth-credentials-popup
