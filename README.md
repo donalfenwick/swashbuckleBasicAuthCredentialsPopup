@@ -28,5 +28,36 @@ To ensure the script is loaded into swagger-ui add the following code when confi
  In order to wire this up, register the following operation filter during configuration of swashbuckle. 
  
  ```
-  ...
+  public class ApplyBasicAuthToApiEndpoints : IOperationFilter
+    {
+        public string Name { get; private set; }
+
+        public ApplyBasicAuthToApiEndpoints()
+        {
+            Name = "basic";
+        }
+
+        public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+        {
+            if (operation.parameters == null)
+            {
+                operation.parameters = new List<Parameter>();
+            }
+
+            // modify the logic in this if statement to apply the header to any api actions that use basic authentication
+            // this example uses a custom attribute on the controler actions
+            if (apiDescription.ActionDescriptor.GetCustomAttributes<RequireBasicAuthAttribute>(true).Count > 0)
+            {
+                operation.parameters.Add(new Parameter
+                {
+                    name = "Authorization",
+                    @in = "header",
+                    description = "Basic http auth credeitials",
+                    required = true,
+                    type = "string"
+                });
+            }
+
+        }
+    }
 ```
